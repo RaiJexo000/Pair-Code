@@ -1,0 +1,9 @@
+node_modules/
+auth_*
+*.log
+.env
+.DS_Store
+temp_audio/
+temp_videos/
+temp_downloads/
+sessions_data/
