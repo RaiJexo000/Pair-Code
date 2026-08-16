@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OSINT WhatsApp Bot</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { max-width: 500px; padding: 20px; background: #1a1a2e; border-radius: 10px; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; border-radius: 5px; border: none; }
+        button { background: #00ff88; color: #000; font-weight: bold; cursor: pointer; }
+        .code { font-size: 2em; letter-spacing: 5px; background: #000; padding: 15px; border-radius: 5px; text-align: center; }
+        .response { background: #000; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🕵️ OSINT WhatsApp Bot</h1>
+    <input type="text" id="phone" placeholder="Enter phone with country code" />
+    <button onclick="generate()">🔗 Generate Pair Code</button>
+    <div id="codeDisplay" class="code" style="display:none;"></div>
+    <div id="status" style="margin:10px 0;"></div>
+    <input type="text" id="command" placeholder="Type command" />
+    <button onclick="sendCommand()">📤 Send</button>
+    <div id="response" class="response">Waiting for commands...</div>
+    <p style="text-align:center;color:#666;">BY @RaiJexo</p>
+</div>
+<script>
+let sessionId = '';
+async function generate() {
+    const phone = document.getElementById('phone').value;
+    const res = await fetch('/api/generate_pair', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
+    const data = await res.json();
+    if (data.success) {
+        sessionId = data.sessionId;
+        document.getElementById('codeDisplay').style.display = 'block';
+        document.getElementById('codeDisplay').textContent = data.code;
+        document.getElementById('status').innerHTML = '✅ Enter this code in WhatsApp: Settings → Linked Devices → Link with Phone Number';
+    }
+}
+async function sendCommand() {
+    const command = document.getElementById('command').value;
+    const res = await fetch('/api/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId, command }) });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('response').innerHTML = data.result.message;
+    }
+}
+</script>
+</body>
+</html>
